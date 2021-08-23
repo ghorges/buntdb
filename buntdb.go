@@ -1923,7 +1923,18 @@ func (r *rect) Rect(ctx interface{}) (min, max []float64) {
 // An invalid index will return an error.
 // The dist param is the distance of the bounding boxes. In the case of
 // simple 2D points, it's the distance of the two 2D points squared.
-func (tx *Tx) Nearby(index, bounds string,
+
+
+// Nearby 搜索目标矩形附近的矩形项。
+// 属于指定索引的所有项目将按顺序返回
+// 从最近到最远。
+// 指定的索引必须是由 AddIndex() 和目标创建的
+// 由 rect 字符串表示。 该字符串将由
+// 传递给 CreateSpatialIndex() 函数的相同边界函数。
+// 无效的索引将返回错误。
+// dist 参数是边界框的距离。 如果是
+// 简单的 2D 点，它是两个 2D 点的距离的平方。
+func (tx *Tx) Nearby(index, bounds string, num int,
 	iterator func(key, value string, dist float64) bool) error {
 	if tx.db == nil {
 		return ErrTxClosed
@@ -1952,7 +1963,7 @@ func (tx *Tx) Nearby(index, bounds string,
 		min, max = idx.rect(bounds)
 	}
 	// set the center param to false, which uses the box dist calc.
-	idx.rtr.KNN(&rect{min, max}, false, iter)
+	idx.rtr.KNN(&rect{min, max}, num,false, iter)
 	return nil
 }
 
